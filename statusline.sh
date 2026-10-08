@@ -1,12 +1,11 @@
 #!/bin/sh
-# Statusline: "<project> · <branch>" / "ctx <bar> <pct>% | 5h <bar> <pct>% <pace> ↻<reset> | 7d <bar> <pct>% <pace> ↻<reset> | [as of <hh:mm>]"
+# Statusline: "<project> · <branch>" / "ctx <pct>% ┃ 5h <pct>% <pace> ↻<reset> ┃ 7d <pct>% <pace> ↻<reset> ┃ [as of <hh:mm>]"
 #   project — basename of the git repo root (falls back to the working dir)
 #   branch  — git branch in the payload's working dir
 #   ctx     — context window used; the slot always renders, showing "—" when the
 #             payload carries no usage yet (session start, /clear, auto-compact),
 #             so "no data" is distinguishable from a broken statusline
 #   5h/7d   — usage-limit window used (rate_limits.<window>.used_percentage)
-#   bar     — 10-cell meter of the same percentage, coloured like it
 #   pace    — used% vs how far through the window we are; ↓ = under the linear
 #             burn rate (room to spare), ↑ = burning faster than linear
 #   ↻reset  — local clock time the window resets (rate_limits.<window>.resets_at)
@@ -26,19 +25,6 @@ C_RESET='\033[0m'
 # Color a percentage by usage threshold: <50 green, <80 yellow, else red.
 pct_color() {
     awk -v p="$1" 'BEGIN{ if(p<50) print "\033[32m"; else if(p<80) print "\033[33m"; else print "\033[31m" }'
-}
-
-# bar <pct> <fill_color> — a 10-cell meter: filled cells in <fill_color>, the
-# rest dim. Rounds to the nearest cell and clamps, so 4% shows nothing and 96%
-# shows full.
-bar() {
-    n=$(awk -v p="$1" 'BEGIN{ n=int(p/10+0.5); if(n<0)n=0; if(n>10)n=10; print n }')
-    filled='' empty='' i=0
-    while [ "$i" -lt 10 ]; do
-        if [ "$i" -lt "$n" ]; then filled="$filled▰"; else empty="$empty▱"; fi
-        i=$((i + 1))
-    done
-    printf '%s%s%s%s%s' "$2" "$filled" "$C_LABEL" "$empty" "$C_RESET"
 }
 
 # GNU and BSD date share no flags for either job below, so each helper tries GNU
@@ -71,9 +57,8 @@ epoch_time() {
 window() {
     label=$1 used=$2 reset=$3 span=$4 rfmt=$5
     [ -n "$used" ] || return 0
-    [ -n "$out" ] && out="$out ${C_LABEL}|${C_RESET} "
-    uc=$(pct_color "$used")
-    out="$out${C_LABEL}${label}${C_RESET} $(bar "$used" "$uc") $uc$(printf '%.0f%%' "$used")${C_RESET}"
+    [ -n "$out" ] && out="$out ${C_LABEL}┃${C_RESET} "
+    out="$out${C_LABEL}${label}${C_RESET} $(pct_color "$used")$(printf '%.0f%%' "$used")${C_RESET}"
 
     epoch=$(reset_epoch "$reset")
     [ -n "$epoch" ] || return 0
@@ -120,14 +105,10 @@ if [ -n "$branch" ]; then
     out="$out${C_BRANCH}${branch}${C_RESET}"
 fi
 
-ctx_pct=""
 if [ -n "$ctx" ]; then
-    ctx_pct=$ctx
+    ctx_txt=$(printf '%.0f%%' "$ctx")
 elif [ "$ctx_tokens" -gt 0 ] 2>/dev/null && [ "$ctx_size" -gt 0 ] 2>/dev/null; then
-    ctx_pct=$(awk -v t="$ctx_tokens" -v s="$ctx_size" 'BEGIN{printf "%.2f", t/s*100}')
-fi
-if [ -n "$ctx_pct" ]; then
-    ctx_txt="$(bar "$ctx_pct" '') $(printf '%.0f%%' "$ctx_pct")"
+    ctx_txt=$(awk -v t="$ctx_tokens" -v s="$ctx_size" 'BEGIN{printf "%.0f%%", t/s*100}')
 else
     ctx_txt='—'
 fi
@@ -139,7 +120,7 @@ window 5h "$five_pct"  "$five_reset"  18000   '%H:%M'
 window 7d "$seven_pct" "$seven_reset" 604800  '%a %H:%M'
 
 # render time — the line only updates on redraw, so this flags how stale it is
-[ -n "$out" ] && out="$out ${C_LABEL}|${C_RESET} "
+[ -n "$out" ] && out="$out ${C_LABEL}┃${C_RESET} "
 out="$out${C_LABEL}[as of $(date '+%H:%M')]${C_RESET}"
 
 printf '%b' "$out"
