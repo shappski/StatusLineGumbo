@@ -1,4 +1,4 @@
-# Claude Code status line: project, branch, context, and both usage windows
+# StatusLineGumbo — a Claude Code status line: project, branch, context, and both usage windows
 
 A status line for Claude Code showing which repo and branch you're in, how much
 of the context window you've used, and **both** usage-limit windows — the 5-hour
@@ -38,7 +38,7 @@ API response of a session — every field falls back to empty if absent. Require
 Download it to `~/.claude/statusline.sh`:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/shappski/claude-statusline/master/statusline.sh \
+curl -fsSL https://raw.githubusercontent.com/shappski/StatusLineGumbo/master/statusline.sh \
   -o ~/.claude/statusline.sh
 chmod +x ~/.claude/statusline.sh
 ```
@@ -46,8 +46,8 @@ chmod +x ~/.claude/statusline.sh
 Or clone the repo and link to it, so a `git pull` is all an update takes:
 
 ```sh
-git clone https://github.com/shappski/claude-statusline.git ~/claude-statusline
-ln -sf ~/claude-statusline/statusline.sh ~/.claude/statusline.sh
+git clone https://github.com/shappski/StatusLineGumbo.git ~/StatusLineGumbo
+ln -sf ~/StatusLineGumbo/statusline.sh ~/.claude/statusline.sh
 ```
 
 It's one POSIX `sh` file — [read it](statusline.sh) before you run it.
