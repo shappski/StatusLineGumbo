@@ -6,7 +6,7 @@ and the weekly — each with a burn-rate indicator and its reset time:
 
 ```
 GitGumbo · master
-ctx 15% · 5h 42% 8%↓behind ↻14:30 · 7d 61% 12%↑ahead ↻Thu 09:46 [as of 13:07]
+ctx 15% | 5h 42% 8%↓behind ↻14:30 | 7d 61% 12%↑ahead ↻Thu 09:46 [as of 13:07]
 ```
 
 - **project** — basename of the git repo root, falling back to the working
@@ -39,7 +39,7 @@ Save this as `~/.claude/statusline.sh`:
 
 ```sh
 #!/bin/sh
-# Statusline: "<project> · <branch>" / "ctx <pct>% · 5h <pct>% <pace> ↻<reset> · 7d <pct>% <pace> ↻<reset> [as of <hh:mm>]"
+# Statusline: "<project> · <branch>" / "ctx <pct>% | 5h <pct>% <pace> ↻<reset> | 7d <pct>% <pace> ↻<reset> [as of <hh:mm>]"
 #   project — basename of the git repo root (falls back to the working dir)
 #   branch  — git branch in the payload's working dir
 #   ctx     — context window used; the slot always renders, showing "—" when the
@@ -97,7 +97,7 @@ epoch_time() {
 window() {
     label=$1 used=$2 reset=$3 span=$4 rfmt=$5
     [ -n "$used" ] || return 0
-    [ -n "$out" ] && out="$out ${C_LABEL}·${C_RESET} "
+    [ -n "$out" ] && out="$out ${C_LABEL}|${C_RESET} "
     out="$out${C_LABEL}${label}${C_RESET} $(pct_color "$used")$(printf '%.0f%%' "$used")${C_RESET}"
 
     epoch=$(reset_epoch "$reset")
