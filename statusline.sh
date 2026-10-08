@@ -1,5 +1,5 @@
 #!/bin/sh
-# Statusline: "<project> · <branch>" / "ctx <pct>% | 5h <pct>% <pace> ↻<reset> | 7d <pct>% <pace> ↻<reset> [as of <hh:mm>]"
+# Statusline: "<project> · <branch>" / "ctx <pct>% | 5h <pct>% <pace> ↻<reset> | 7d <pct>% <pace> ↻<reset> | [as of <hh:mm>]"
 #   project — basename of the git repo root (falls back to the working dir)
 #   branch  — git branch in the payload's working dir
 #   ctx     — context window used; the slot always renders, showing "—" when the
@@ -120,7 +120,7 @@ window 5h "$five_pct"  "$five_reset"  18000   '%H:%M'
 window 7d "$seven_pct" "$seven_reset" 604800  '%a %H:%M'
 
 # render time — the line only updates on redraw, so this flags how stale it is
-[ -n "$out" ] && out="$out "
+[ -n "$out" ] && out="$out ${C_LABEL}|${C_RESET} "
 out="$out${C_LABEL}[as of $(date '+%H:%M')]${C_RESET}"
 
 printf '%b' "$out"

@@ -6,7 +6,7 @@ and the weekly — each with a burn-rate indicator and its reset time:
 
 ```
 GitGumbo · master
-ctx 15% | 5h 42% 8%↓behind ↻14:30 | 7d 61% 12%↑ahead ↻Thu 09:46 [as of 13:07]
+ctx 15% | 5h 42% 8%↓behind ↻14:30 | 7d 61% 12%↑ahead ↻Thu 09:46 | [as of 13:07]
 ```
 
 - **project** — basename of the git repo root, falling back to the working
@@ -39,7 +39,7 @@ Save this as `~/.claude/statusline.sh`:
 
 ```sh
 #!/bin/sh
-# Statusline: "<project> · <branch>" / "ctx <pct>% | 5h <pct>% <pace> ↻<reset> | 7d <pct>% <pace> ↻<reset> [as of <hh:mm>]"
+# Statusline: "<project> · <branch>" / "ctx <pct>% | 5h <pct>% <pace> ↻<reset> | 7d <pct>% <pace> ↻<reset> | [as of <hh:mm>]"
 #   project — basename of the git repo root (falls back to the working dir)
 #   branch  — git branch in the payload's working dir
 #   ctx     — context window used; the slot always renders, showing "—" when the
@@ -160,7 +160,7 @@ window 5h "$five_pct"  "$five_reset"  18000   '%H:%M'
 window 7d "$seven_pct" "$seven_reset" 604800  '%a %H:%M'
 
 # render time — the line only updates on redraw, so this flags how stale it is
-[ -n "$out" ] && out="$out "
+[ -n "$out" ] && out="$out ${C_LABEL}|${C_RESET} "
 out="$out${C_LABEL}[as of $(date '+%H:%M')]${C_RESET}"
 
 printf '%b' "$out"
