@@ -1,5 +1,5 @@
 #!/bin/sh
-# Statusline: "<project> · <branch> · ctx <pct>% · 5h <pct>% <pace> ↻<reset> · 7d <pct>% <pace> ↻<reset> [as of <hh:mm>]"
+# Statusline: "<project> · <branch>" / "ctx <pct>% · 5h <pct>% <pace> ↻<reset> · 7d <pct>% <pace> ↻<reset> [as of <hh:mm>]"
 #   project — basename of the git repo root (falls back to the working dir)
 #   branch  — git branch in the payload's working dir
 #   ctx     — context window used; the slot always renders, showing "—" when the
@@ -112,7 +112,8 @@ elif [ "$ctx_tokens" -gt 0 ] 2>/dev/null && [ "$ctx_size" -gt 0 ] 2>/dev/null; t
 else
     ctx_txt='—'
 fi
-[ -n "$out" ] && out="$out ${C_LABEL}·${C_RESET} "
+# stats start a second line, so a long project or branch name never pushes them off-screen
+[ -n "$out" ] && out="$out\n"
 out="$out${C_LABEL}ctx${C_RESET} $ctx_txt"
 
 window 5h "$five_pct"  "$five_reset"  18000   '%H:%M'
