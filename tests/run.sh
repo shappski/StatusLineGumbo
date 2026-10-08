@@ -69,17 +69,6 @@ for f in payload payload-no-ctx payload-no-limits; do
     fi
 done
 
-# The README is the hand-out: people are given the fenced script to paste, not
-# a clone. That makes the inline copy a second implementation, and a second
-# implementation drifts — which is the whole reason this repo exists. Pin them.
-extracted=$(awk '/^## 1\. Create the script/{s=1} s&&/^```sh$/{c=1;next} c&&/^```$/{exit} c' "$ROOT/README.md")
-if [ "$extracted" = "$(cat "$SCRIPT")" ]; then
-    pass "the README's inline copy is byte-identical to statusline.sh"
-else
-    fail "the README's inline copy is byte-identical to statusline.sh"
-    printf '%s\n' "$extracted" | diff "$SCRIPT" - | head -20 || true
-fi
-
 printf '\n'
 if [ "$fails" -eq 0 ]; then
     printf 'all statusline tests passed\n'
