@@ -222,3 +222,7 @@ behind the original, and its one golden differed by nothing but a colour code.
 
 `tests/fixtures/payload-no-ctx.json` is a real captured session-start payload,
 with the paths replaced so the render is deterministic.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
